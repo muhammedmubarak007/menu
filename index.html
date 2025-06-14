@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Menu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+        }
+        
+        .menu-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-button:hover {
+            background-color: #ff5252;
+            transform: scale(1.1);
+        }
+        
+        .menu-button i {
+            font-size: 24px;
+        }
+        
+        .categories {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 99;
+            width: 200px;
+        }
+        
+        .category-item {
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+        
+        .category-item:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .category-count {
+            background-color: #ff6b6b;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+        }
+        
+        .menu-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ff6b6b;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: #333;
+        }
+        
+        .items-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        .item {
+            display: flex;
+            justify-content: space-between;
+            background-color: #fff;
+            position: relative;
+            border-bottom: .5px solid #66666654; /* Added line between items */
+        }
+        
+        .item:last-child {
+            border-bottom: none; /* Remove line from last item */
+        }
+        
+        .item-left {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .item-indicator {
+            position: relative;
+            width: 24px;
+            height: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .indicator-circle {
+            width: 24px;
+            height: 24px;
+            border-radius: 22%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid;
+        }
+        
+        .indicator-square {
+                border-radius: 50%;
+            width: 12px;
+            height: 12px;
+            background-color: white;
+        }
+        
+        .veg .indicator-circle {
+            background-color: green;
+            border-color: green;
+        }
+        
+        .non-veg .indicator-circle {
+            background-color: red;
+            border-color: red;
+        }
+        
+        .item-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .item-price {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        
+        .item-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            margin-left: 15px;
+        }
+        
+        .item-image {
+            width: 100px;
+            height: 100px;
+            min-width: 100px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+        
+        .add-button {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 0.9rem;
+            width: 100px;
+        }
+        
+        .add-button:hover {
+            background-color: #ff5252;
+        }
+        
+        /* Mobile-specific adjustments */
+        @media (max-width: 600px) {
+            .item {
+                padding: 12px 12px 17px 12px;
+            }
+            
+            .item-image {
+                width: 80px;
+                height: 80px;
+                min-width: 80px;
+            }
+            
+            .add-button {
+                width: 80px;
+                padding: 5px 10px;
+            }
+            
+            .item-name {
+                font-size: 1rem;
+            }
+            
+            .item-price {
+                font-size: 0.9rem;
+            }
+            
+            .indicator-circle {
+                width: 20px;
+                height: 20px;
+            }
+            
+            .indicator-square {
+                width: 10px;
+                height: 10px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Our Menu</h1>
+        <p>Delicious food for every taste</p>
+    </div>
+    
+    <!-- All menu sections -->
+    <section id="recommended" class="menu-section">
+        <div class="section-header">
+            <h2 class="section-title">Recommended</h2>
+            <span class="category-count">8</span>
+        </div>
+        <div class="items-list" id="recommendedItems"></div>
+    </section>
+    
+    <section id="new" class="menu-section">
+        <div class="section-header">
+            <h2 class="section-title">Newly Launched</h2>
+            <span class="category-count">5</span>
+        </div>
+        <div class="items-list" id="newItems"></div>
+    </section>
+    
+    <section id="combo" class="menu-section">
+        <div class="section-header">
+            <h2 class="section-title">Combo Offers</h2>
+            <span class="category-count">6</span>
+        </div>
+        <div class="items-list" id="comboItems"></div>
+    </section>
+    
+    <section id="fried" class="menu-section">
+        <div class="section-header">
+            <h2 class="section-title">Fried Items</h2>
+            <span class="category-count">12</span>
+        </div>
+        <div class="items-list" id="friedItems"></div>
+    </section>
+    
+    <section id="snacks" class="menu-section">
+        <div class="section-header">
+            <h2 class="section-title">Snacks</h2>
+            <span class="category-count">10</span>
+        </div>
+        <div class="items-list" id="snacksItems"></div>
+    </section>
+    
+    <!-- Floating menu button and categories -->
+    <div class="categories" id="categories">
+        <div class="category-item" data-category="recommended">
+            <span>Recommended</span>
+            <span class="category-count">8</span>
+        </div>
+        <div class="category-item" data-category="new">
+            <span>Newly Launched</span>
+            <span class="category-count">5</span>
+        </div>
+        <div class="category-item" data-category="combo">
+            <span>Combo Offers</span>
+            <span class="category-count">6</span>
+        </div>
+        <div class="category-item" data-category="fried">
+            <span>Fried Items</span>
+            <span class="category-count">12</span>
+        </div>
+        <div class="category-item" data-category="snacks">
+            <span>Snacks</span>
+            <span class="category-count">10</span>
+        </div>
+    </div>
+    
+    <button class="menu-button" id="menuButton">
+        <i class="fas fa-utensils"></i>
+    </button>
+    
+    <script>
+        // Menu data
+        const menuData = {
+            recommended: [
+                { name: "Butter Chicken", price: 320, veg: false, image: "assets/butter.jpg" },
+                { name: "Paneer Tikka", price: 280, veg: true, image: "assets/butter.jpg" },
+                { name: "Dal Makhani", price: 220, veg: true,image: "assets/butter.jpg"},
+                { name: "Chicken Biryani", price: 250, veg: false, image: "assets/butter.jpg"},
+                { name: "Garlic Naan", price: 60, veg: true, image: "assets/butter.jpg" },
+                { name: "Mutton Rogan Josh", price: 380, veg: false,image: "assets/butter.jpg"},
+                { name: "Palak Paneer", price: 240, veg: true, image: "assets/butter.jpg"},
+                { name: "Tandoori Chicken", price: 300, veg: false, image: "assets/butter.jpg"}
+            ],
+            new: [
+                { name: "Avocado Salad", price: 180, veg: true, image: "https://source.unsplash.com/random/300x300/?avocado,salad" },
+                { name: "Quinoa Bowl", price: 220, veg: true, image: "https://source.unsplash.com/random/300x300/?quinoa,bowl" },
+                { name: "Sushi Platter", price: 350, veg: false, image: "https://source.unsplash.com/random/300x300/?sushi,platter" },
+                { name: "Truffle Pasta", price: 280, veg: true, image: "https://source.unsplash.com/random/300x300/?truffle,pasta" },
+                { name: "Dragon Roll", price: 320, veg: false, image: "https://source.unsplash.com/random/300x300/?dragon,roll" }
+            ],
+            combo: [
+                { name: "Meal for Two", price: 599, veg: false, image: "https://source.unsplash.com/random/300x300/?meal,two" },
+                { name: "Veg Thali", price: 299, veg: true, image: "https://source.unsplash.com/random/300x300/?veg,thali" },
+                { name: "Non-Veg Thali", price: 399, veg: false, image: "https://source.unsplash.com/random/300x300/?nonveg,thali" },
+                { name: "Burger Combo", price: 199, veg: true, image: "https://source.unsplash.com/random/300x300/?burger,combo" },
+                { name: "Pizza + Pasta", price: 349, veg: true, image: "https://source.unsplash.com/random/300x300/?pizza,pasta" },
+                { name: "Family Pack", price: 699, veg: false, image: "https://source.unsplash.com/random/300x300/?family,pack" }
+            ],
+            fried: [
+                { name: "Chicken Wings", price: 220, veg: false, image: "https://source.unsplash.com/random/300x300/?chicken,wings" },
+                { name: "French Fries", price: 120, veg: true, image: "https://source.unsplash.com/random/300x300/?french,fries" },
+                { name: "Onion Rings", price: 150, veg: true, image: "https://source.unsplash.com/random/300x300/?onion,rings" },
+                { name: "Fried Chicken", price: 250, veg: false, image: "https://source.unsplash.com/random/300x300/?fried,chicken" },
+                { name: "Spring Rolls", price: 180, veg: true, image: "https://source.unsplash.com/random/300x300/?spring,rolls" },
+                { name: "Fish & Chips", price: 280, veg: false, image: "https://source.unsplash.com/random/300x300/?fish,chips" },
+                { name: "Mozzarella Sticks", price: 200, veg: true, image: "https://source.unsplash.com/random/300x300/?mozzarella,sticks" },
+                { name: "Fried Prawns", price: 320, veg: false, image: "https://source.unsplash.com/random/300x300/?fried,prawns" },
+                { name: "Samosa", price: 80, veg: true, image: "https://source.unsplash.com/random/300x300/?samosa" },
+                { name: "Pakora", price: 120, veg: true, image: "https://source.unsplash.com/random/300x300/?pakora" },
+                { name: "Fried Mushrooms", price: 160, veg: true, image: "https://source.unsplash.com/random/300x300/?fried,mushrooms" },
+                { name: "Chicken Nuggets", price: 190, veg: false, image: "https://source.unsplash.com/random/300x300/?chicken,nuggets" }
+            ],
+            snacks: [
+                { name: "Masala Dosa", price: 150, veg: true, image: "https://source.unsplash.com/random/300x300/?masala,dosa" },
+                { name: "Pav Bhaji", price: 120, veg: true, image: "https://source.unsplash.com/random/300x300/?pav,bhaji" },
+                { name: "Vada Pav", price: 60, veg: true, image: "https://source.unsplash.com/random/300x300/?vada,pav" },
+                { name: "Pani Puri", price: 80, veg: true, image: "https://source.unsplash.com/random/300x300/?pani,puri" },
+                { name: "Bhel Puri", price: 90, veg: true, image: "https://source.unsplash.com/random/300x300/?bhel,puri" },
+                { name: "Chicken Wrap", price: 180, veg: false, image: "https://source.unsplash.com/random/300x300/?chicken,wrap" },
+                { name: "Egg Roll", price: 120, veg: false, image: "https://source.unsplash.com/random/300x300/?egg,roll" },
+                { name: "Sandwich", price: 140, veg: true, image: "https://source.unsplash.com/random/300x300/?sandwich" },
+                { name: "Nachos", price: 160, veg: true, image: "https://source.unsplash.com/random/300x300/?nachos" },
+                { name: "Chicken Tikka Roll", price: 200, veg: false, image: "https://source.unsplash.com/random/300x300/?chicken,tikka,roll" }
+            ]
+        };
+
+        // DOM elements
+        const menuButton = document.getElementById('menuButton');
+        const categories = document.getElementById('categories');
+
+        // Initialize all menu sections
+        function initializeMenu() {
+            for (const category in menuData) {
+                const container = document.getElementById(`${category}Items`);
+                container.innerHTML = '';
+                
+                menuData[category].forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = `item ${item.veg ? 'veg' : 'non-veg'}`;
+                    
+                    itemElement.innerHTML = `
+                        <div class="item-left">
+                            <div class="item-indicator">
+                                <div class="indicator-circle">
+                                    <div class="indicator-square"></div>
+                                </div>
+                            </div>
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-price">₹${item.price}</div>
+                        </div>
+                        <div class="item-right">
+                            <img src="${item.image}" alt="${item.name}" class="item-image">
+                            <button class="add-button">Add</button>
+                        </div>
+                    `;
+                    
+                    container.appendChild(itemElement);
+                });
+            }
+        }
+
+        // Toggle categories menu
+        menuButton.addEventListener('click', () => {
+            categories.style.display = categories.style.display === 'flex' ? 'none' : 'flex';
+        });
+
+        // Handle category selection
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const category = item.getAttribute('data-category');
+                document.getElementById(category).scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+                categories.style.display = 'none';
+            });
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initializeMenu);
+    </script>
+</body>
+</html>
